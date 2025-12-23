@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Голф Турнир Antalya 2025/2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 16px;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: white;
+            color: #003366;
+            border-bottom: 3px solid #003366;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #003366;
+        }
+
+        .scorecard {
+            margin-top: 20px;
+        }
+
+        .scorecard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .scorecard-table th {
+            background: #003366;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+        }
+
+        .scorecard-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .scorecard-table input {
+            width: 50px;
+            padding: 8px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .scorecard-table input:focus {
+            outline: none;
+            border-color: #003366;
+        }
+
+        .points-cell {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .points-good {
+            color: #28a745;
+        }
+
+        .points-par {
+            color: #007bff;
+        }
+
+        .points-bad {
+            color: #dc3545;
+        }
+
+        .total-row {
+            background: #fff3cd;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn {
+            background: #003366;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #004d99;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .leaderboard-table th {
+            background: #003366;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .leaderboard-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leaderboard-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .rank-1 {
+            background: #FFD700 !important;
+            font-weight: bold;
+        }
+
+        .rank-2 {
+            background: #C0C0C0 !important;
+            font-weight: bold;
+        }
+
+        .rank-3 {
+            background: #CD7F32 !important;
+            font-weight: bold;
+        }
+
+        .category-header {
+            background: #003366;
+            color: white;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #003366;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #003366;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+
+            .scorecard-table input {
+                width: 40px;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏌️ Голф Турнир Antalya</h1>
+            <p>Декември 2025 - Януари 2026 | Stableford Format</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('scorecard')">📝 Въведи Резултат</button>
+            <button class="tab" onclick="showTab('leaderboard')">🏆 Класиране</button>
+            <button class="tab" onclick="showTab('myresults')">📊 Моите Резултати</button>
+        </div>
+
+        <!-- Въвеждане на резултат -->
+        <div id="scorecard" class="tab-content active">
+            <h2 style="color: #003366; margin-bottom: 20px;">Въведи Резултат</h2>
+            
+            <div class="form-group">
+                <label>Избери Играч:</label>
+                <select id="playerSelect" onchange="updatePlayerInfo()">
+                    <option value="">-- Избери играч --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Избери Игрище:</label>
+                <select id="courseSelect" onchange="updateCourseInfo()">
+                    <option value="">-- Избери игрище --</option>
+                </select>
+            </div>
+
+            <div id="playerInfo" style="display: none;" class="info-box">
+                <strong>Играч:</strong> <span id="infoPlayerName"></span><br>
+                <strong>Handicap:</strong> <span id="infoPlayerHcp"></span><br>
+                <strong>Playing Handicap:</strong> <span id="infoPlayingHcp"></span><br>
+                <strong>Игрище:</strong> <span id="infoCourse"></span><br>
+                <strong>Дата:</strong> <span id="infoDate"></span>
+            </div>
+
+            <div id="scorecardTable" style="display: none;">
+                <h3 style="color: #003366; margin-top: 30px;">Front Nine (1-9)</h3>
+                <table class="scorecard-table">
+                    <thead>
+                        <tr>
+                            <th>Дупка</th>
+                            <th>Par</th>
+                            <th>Удари</th>
+                            <th>Точки</th>
+                        </tr>
+                    </thead>
+                    <tbody id="frontNine"></tbody>
+                </table>
+
+                <h3 style="color: #003366; margin-top: 30px;">Back Nine (10-18)</h3>
+                <table class="scorecard-table">
+                    <thead>
+                        <tr>
+                            <th>Дупка</th>
+                            <th>Par</th>
+                            <th>Удари</th>
+                            <th>Точки</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backNine"></tbody>
+                </table>
+
+                <table class="scorecard-table" style="margin-top: 20px;">
+                    <tbody>
+                        <tr class="total-row">
+                            <td>OUT (1-9)</td>
+                            <td colspan="2"></td>
+                            <td id="outPoints">0</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>IN (10-18)</td>
+                            <td colspan="2"></td>
+                            <td id="inPoints">0</td>
+                        </tr>
+                        <tr class="total-row" style="background: #FFD700;">
+                            <td><strong>ОБЩО</strong></td>
+                            <td colspan="2"></td>
+                            <td id="totalPoints">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn" onclick="saveScore()">💾 Запази Резултат</button>
+            </div>
+
+            <div id="saveMessage"></div>
+        </div>
+
+        <!-- Класиране -->
+        <div id="leaderboard" class="tab-content">
+            <h2 style="color: #003366; margin-bottom: 20px;">🏆 Класиране</h2>
+            
+            <div class="category-header">👨 Мъже</div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Място</th>
+                        <th>Играч</th>
+                        <th>HCP</th>
+                        <th>Рунд 1</th>
+                        <th>Рунд 2</th>
+                        <th>Рунд 3</th>
+                        <th>Рунд 4</th>
+                        <th>Рунд 5</th>
+                        <th>Рунд 6</th>
+                        <th>Общо</th>
+                    </tr>
+                </thead>
+                <tbody id="menLeaderboard"></tbody>
+            </table>
+
+            <div class="category-header">👩 Жени</div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Място</th>
+                        <th>Играч</th>
+                        <th>HCP</th>
+                        <th>Рунд 1</th>
+                        <th>Рунд 2</th>
+                        <th>Рунд 3</th>
+                        <th>Рунд 4</th>
+                        <th>Рунд 5</th>
+                        <th>Рунд 6</th>
+                        <th>Общо</th>
+                    </tr>
+                </thead>
+                <tbody id="womenLeaderboard"></tbody>
+            </table>
+        </div>
+
+        <!-- Моите резултати -->
+        <div id="myresults" class="tab-content">
+            <h2 style="color: #003366; margin-bottom: 20px;">📊 Моите Резултати</h2>
+            
+            <div class="form-group">
+                <label>Избери Играч:</label>
+                <select id="myPlayerSelect" onchange="showMyResults()">
+                    <option value="">-- Избери играч --</option>
+                </select>
+            </div>
+
+            <div id="myResultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Данни за играчи
+        const players = {
+            "Petq Ilieva": { hcp: 19.4, gender: "F" },
+            "Elka Georgieva": { hcp: 21.4, gender: "F" },
+            "Pepi Kostova": { hcp: 31.3, gender: "F" },
+            "Albena Deneva": { hcp: 19.7, gender: "F" },
+            "Stoyanka Tsoneva": { hcp: 27.8, gender: "F" },
+            "Fani Martinova": { hcp: 40.3, gender: "F" },
+            "Biser Denev": { hcp: 10.7, gender: "M" },
+            "Ilian Iliev": { hcp: 14.0, gender: "M" },
+            "Todor Kostov": { hcp: 9.2, gender: "M" },
+            "Anton Panayotov": { hcp: 8.8, gender: "M" },
+            "Zlatan Zlatanov": { hcp: 26.8, gender: "M" },
+            "Hristo Bojikov": { hcp: 24.3, gender: "M" },
+            "Krasimir Martinov": { hcp: 25.9, gender: "M" },
+            "Dido Gospodinov": { hcp: 10.8, gender: "M" },
+            "Trifon Siderov": { hcp: 11.2, gender: "M" },
+            "Niki Georgiev": { hcp: 16.2, gender: "M" }
+        };
+
+        // Данни за игрища
+        const courses = [
+            {
+                id: "national_28dec",
+                name: "National Golf Club",
+                date: "28.12.2025",
+                par: 72,
+                M: { rating: 73.4, slope: 143 },
+                F: { rating: 71.7, slope: 132 }
+            },
+            {
+                id: "carya_29dec",
+                name: "Carya Golf Club",
+                date: "29.12.2025",
+                par: 72,
+                M: { rating: 72.3, slope: 135 },
+                F: { rating: 71.0, slope: 130 }
+            },
+            {
+                id: "national_30dec",
+                name: "National Golf Club",
+                date: "30.12.2025",
+                par: 72,
+                M: { rating: 73.4, slope: 143 },
+                F: { rating: 71.7, slope: 132 }
+            },
+            {
+                id: "carya_31dec",
+                name: "Carya Golf Club",
+                date: "31.12.2025",
+                par: 72,
+                M: { rating: 72.3, slope: 135 },
+                F: { rating: 71.0, slope: 130 }
+            },
+            {
+                id: "gloria_01jan",
+                name: "Gloria Old",
+                date: "01.01.2026",
+                par: 72,
+                M: { rating: 74.0, slope: 139 },
+                F: { rating: 71.4, slope: 139 }
+            },
+            {
+                id: "sultan_02jan",
+                name: "Sultan",
+                date: "02.01.2026",
+                par: 71,
+                M: { rating: 73.9, slope: 142 },
+                F: { rating: 73.9, slope: 142 }
+            }
+        ];
+
+        let currentPlayer = null;
+        let currentCourse = null;
+        let currentPlayingHcp = 0;
+
+        // Инициализация
+        function init() {
+            populatePlayerSelects();
+            populateCourseSelect();
+            loadLeaderboard();
+        }
+
+        function populatePlayerSelects() {
+            const playerSelect = document.getElementById('playerSelect');
+            const myPlayerSelect = document.getElementById('myPlayerSelect');
+            
+            Object.keys(players).sort().forEach(name => {
+                const option1 = document.createElement('option');
+                option1.value = name;
+                option1.textContent = name;
+                playerSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = name;
+                option2.textContent = name;
+                myPlayerSelect.appendChild(option2);
+            });
+        }
+
+        function populateCourseSelect() {
+            const courseSelect = document.getElementById('courseSelect');
+            
+            courses.forEach((course, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${course.name} - ${course.date}`;
+                courseSelect.appendChild(option);
+            });
+        }
+
+        function calculatePlayingHcp(courseHcp, slope) {
+            return Math.round(courseHcp * (slope / 113.0));
+        }
+
+        function updatePlayerInfo() {
+            const playerName = document.getElementById('playerSelect').value;
+            if (!playerName) {
+                document.getElementById('playerInfo').style.display = 'none';
+                document.getElementById('scorecardTable').style.display = 'none';
+                return;
+            }
+
+            currentPlayer = playerName;
+            updateCourseInfo();
+        }
+
+        function updateCourseInfo() {
+            const courseIndex = document.getElementById('courseSelect').value;
+            const playerName = document.getElementById('playerSelect').value;
+
+            if (!courseIndex || !playerName) {
+                document.getElementById('playerInfo').style.display = 'none';
+                document.getElementById('scorecardTable').style.display = 'none';
+                return;
+            }
+
+            currentCourse = courses[courseIndex];
+            const player = players[playerName];
+            const slope = currentCourse[player.gender].slope;
+            currentPlayingHcp = calculatePlayingHcp(player.hcp, slope);
+
+            document.getElementById('infoPlayerName').textContent = playerName;
+            document.getElementById('infoPlayerHcp').textContent = player.hcp.toFixed(1);
+            document.getElementById('infoPlayingHcp').textContent = currentPlayingHcp;
+            document.getElementById('infoCourse').textContent = currentCourse.name;
+            document.getElementById('infoDate').textContent = currentCourse.date;
+
+            document.getElementById('playerInfo').style.display = 'block';
+            document.getElementById('scorecardTable').style.display = 'block';
+
+            generateScorecard();
+        }
+
+        function generateScorecard() {
+            const frontNine = document.getElementById('frontNine');
+            const backNine = document.getElementById('backNine');
+            
+            frontNine.innerHTML = '';
+            backNine.innerHTML = '';
+
+            // Front 9
+            for (let i = 1; i <= 9; i++) {
+                const row = createHoleRow(i, currentCourse.par);
+                frontNine.appendChild(row);
+            }
+
+            // Back 9
+            for (let i = 10; i <= 18; i++) {
+                const row = createHoleRow(i, currentCourse.par);
+                backNine.appendChild(row);
+            }
+        }
+
+        function createHoleRow(holeNum, coursePar) {
+            const row = document.createElement('tr');
+            const par = holeNum <= 9 ? Math.round(coursePar / 2 / 9) * 9 / 9 : Math.round(coursePar / 2 / 9) * 9 / 9;
+            const holePar = holeNum % 3 === 0 ? 5 : (holeNum % 3 === 1 ? 4 : 3);
+            
+            row.innerHTML = `
+                <td><strong>${holeNum}</strong></td>
+                <td>${holePar}</td>
+                <td><input type="number" min="1" max="15" id="strokes_${holeNum}" onchange="calculatePoints(${holeNum}, ${holePar})"></td>
+                <td class="points-cell" id="points_${holeNum}">-</td>
+            `;
+            
+            return row;
+        }
+
+        function calculatePoints(holeNum, par) {
+            const strokes = parseInt(document.getElementById(`strokes_${holeNum}`).value);
+            if (!strokes) {
+                document.getElementById(`points_${holeNum}`).textContent = '-';
+                updateTotals();
+                return;
+            }
+
+            const netStrokes = strokes - Math.floor(currentPlayingHcp / 18) - (holeNum <= (currentPlayingHcp % 18) ? 1 : 0);
+            const diff = par - netStrokes;
+            
+            let points = 0;
+            if (diff >= 2) points = 4; // Eagle or better
+            else if (diff === 1) points = 3; // Birdie
+            else if (diff === 0) points = 2; // Par
+            else if (diff === -1) points = 1; // Bogey
+            else points = 0; // Double bogey or worse
+
+            const pointsCell = document.getElementById(`points_${holeNum}`);
+            pointsCell.textContent = points;
+            
+            pointsCell.className = 'points-cell';
+            if (points >= 3) pointsCell.classList.add('points-good');
+            else if (points === 2) pointsCell.classList.add('points-par');
+            else pointsCell.classList.add('points-bad');
+
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let outPoints = 0;
+            let inPoints = 0;
+
+            for (let i = 1; i <= 9; i++) {
+                const points = document.getElementById(`points_${i}`).textContent;
+                if (points !== '-') outPoints += parseInt(points);
+            }
+
+            for (let i = 10; i <= 18; i++) {
+                const points = document.getElementById(`points_${i}`).textContent;
+                if (points !== '-') inPoints += parseInt(points);
+            }
+
+            document.getElementById('outPoints').textContent = outPoints;
+            document.getElementById('inPoints').textContent = inPoints;
+            document.getElementById('totalPoints').textContent = outPoints + inPoints;
+        }
+
+        async function saveScore() {
+            const playerName = document.getElementById('playerSelect').value;
+            const courseIndex = document.getElementById('courseSelect').value;
+            const totalPoints = parseInt(document.getElementById('totalPoints').textContent);
+
+            if (!playerName || courseIndex === '' || totalPoints === 0) {
+                alert('Моля, попълнете всички данни!');
+                return;
+            }
+
+            const course = courses[courseIndex];
+            const strokes = [];
+            const points = [];
+
+            for (let i = 1; i <= 18; i++) {
+                const strokeInput = document.getElementById(`strokes_${i}`);
+                const pointCell = document.getElementById(`points_${i}`);
+                
+                if (!strokeInput.value) {
+                    alert(`Моля, попълнете удари за дупка ${i}`);
+                    return;
+                }
+
+                strokes.push(parseInt(strokeInput.value));
+                points.push(parseInt(pointCell.textContent));
+            }
+
+            const scoreData = {
+                player: playerName,
+                courseId: course.id,
+                courseName: course.name,
+                date: course.date,
+                playingHcp: currentPlayingHcp,
+                strokes: strokes,
+                points: points,
+                totalPoints: totalPoints,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const key = `score:${playerName}:${course.id}`;
+                await window.storage.set(key, JSON.stringify(scoreData));
+
+                document.getElementById('saveMessage').innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ Резултатът е записан успешно!<br>
+                        Играч: ${playerName}<br>
+                        Игрище: ${course.name}<br>
+                        Общо точки: ${totalPoints}
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    document.getElementById('saveMessage').innerHTML = '';
+                }, 5000);
+
+                loadLeaderboard();
+            } catch (error) {
+                alert('Грешка при запазване: ' + error.message);
+            }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const keys = await window.storage.list('score:');
+                const scores = {};
+
+                for (const key of keys.keys) {
+                    try {
+                        const result = await window.storage.get(key);
+                        if (result && result.value) {
+                            const scoreData = JSON.parse(result.value);
+                            
+                            if (!scores[scoreData.player]) {
+                                scores[scoreData.player] = {
+                                    player: scoreData.player,
+                                    gender: players[scoreData.player].gender,
+                                    hcp: players[scoreData.player].hcp,
+                                    rounds: {}
+                                };
+                            }
+                            
+                            scores[scoreData.player].rounds[scoreData.courseId] = scoreData.totalPoints;
+                        }
+                    } catch (e) {
+                        console.error('Error loading score:', e);
+                    }
+                }
+
+                displayLeaderboard(scores);
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        function displayLeaderboard(scores) {
+            const men = [];
+            const women = [];
+
+            Object.values(scores).forEach(player => {
+                const roundScores = Object.values(player.rounds);
+                const total = roundScores.reduce((a, b) => a + b, 0);
+                
+                const playerData = {
+                    ...player,
+                    total: total,
+                    roundScores: courses.map(c => player.rounds[c.id] || '-')
+                };
+
+                if (player.gender === 'M') men.push(playerData);
+                else women.push(playerData);
+            });
+
+            men.sort((a, b) => b.total - a.total);
+            women.sort((a, b) => b.total - a.total);
+
+            displayCategoryLeaderboard('menLeaderboard', men);
+            displayCategoryLeaderboard('womenLeaderboard', women);
+        }
+
+        function displayCategoryLeaderboard(tableId, players) {
+            const tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            players.forEach((player, index) => {
+                const row = document.createElement('tr');
+                if (index === 0) row.classList.add('rank-1');
+                else if (index === 1) row.classList.add('rank-2');
+                else if (index === 2) row.classList.add('rank-3');
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${player.player}</td>
+                    <td>${player.hcp.toFixed(1)}</td>
+                    ${player.roundScores.map(s => `<td>${s}</td>`).join('')}
+                    <td><strong>${player.total}</strong></td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        async function showMyResults() {
+            const playerName = document.getElementById('myPlayerSelect').value;
+            const content = document.getElementById('myResultsContent');
+
+            if (!playerName) {
+                content.innerHTML = '';
+                return;
+            }
+
+            try {
+                const keys = await window.storage.list(`score:${playerName}:`);
+                const myScores = [];
+
+                for (const key of keys.keys) {
+                    try {
+                        const result = await window.storage.get(key);
+                        if (result && result.value) {
+                            myScores.push(JSON.parse(result.value));
+                        }
+                    } catch (e) {
+                        console.error('Error loading score:', e);
+                    }
+                }
+
+                myScores.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                let html = `<h3 style="color: #003366; margin-top: 20px;">Резултати на ${playerName}</h3>`;
+                
+                if (myScores.length === 0) {
+                    html += '<p>Все още няма записани резултати.</p>';
+                } else {
+                    myScores.forEach(score => {
+                        html += `
+                            <div class="info-box" style="margin-top: 20px;">
+                                <h4 style="color: #003366;">${score.courseName} - ${score.date}</h4>
+                                <strong>Playing Handicap:</strong> ${score.playingHcp}<br>
+                                <strong>Общо точки:</strong> <span style="font-size: 1.5em; color: #003366;">${score.totalPoints}</span>
+                            </div>
+                        `;
+                    });
+
+                    const total = myScores.reduce((sum, s) => sum + s.totalPoints, 0);
+                    html += `
+                        <div class="alert alert-info" style="margin-top: 20px;">
+                            <strong>Общо от всички рундове:</strong> ${total} точки
+                        </div>
+                    `;
+                }
+
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<p>Грешка при зареждане на резултатите.</p>';
+            }
+        }
+
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'leaderboard') {
+                loadLeaderboard();
+            }
+        }
+
+        // Инициализация при зареждане
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
