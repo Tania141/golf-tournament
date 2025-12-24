@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Голф Турнир Antalya 2025/2026</title>
+    
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        
+        window.firebaseApp = initializeApp;
+        window.getDatabase = getDatabase;
+        window.dbRef = ref;
+        window.dbSet = set;
+        window.dbGet = get;
+        window.dbOnValue = onValue;
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -598,13 +612,11 @@
                         <th>Място</th>
                         <th>Играч</th>
                         <th>HCP</th>
-                        <th>Р1</th>
-                        <th>Р2</th>
-                        <th>Р3</th>
-                        <th>Р4</th>
-                        <th>Р5</th>
-                        <th>Р6</th>
-                        <th>Топ 4</th>
+                        <th style="background: #28a745;">Топ 1</th>
+                        <th style="background: #28a745;">Топ 2</th>
+                        <th style="background: #28a745;">Топ 3</th>
+                        <th style="background: #28a745;">Топ 4</th>
+                        <th style="background: #FFD700; color: #000;">ОБЩО</th>
                     </tr>
                 </thead>
                 <tbody id="menLeaderboard"></tbody>
@@ -617,13 +629,11 @@
                         <th>Място</th>
                         <th>Играч</th>
                         <th>HCP</th>
-                        <th>Р1</th>
-                        <th>Р2</th>
-                        <th>Р3</th>
-                        <th>Р4</th>
-                        <th>Р5</th>
-                        <th>Р6</th>
-                        <th>Топ 4</th>
+                        <th style="background: #28a745;">Топ 1</th>
+                        <th style="background: #28a745;">Топ 2</th>
+                        <th style="background: #28a745;">Топ 3</th>
+                        <th style="background: #28a745;">Топ 4</th>
+                        <th style="background: #FFD700; color: #000;">ОБЩО</th>
                     </tr>
                 </thead>
                 <tbody id="womenLeaderboard"></tbody>
@@ -839,6 +849,47 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvmWe-SF0PrHjxGbpP0R11eEot1fRwZLs",
+            authDomain: "golf-tournament-antalya.firebaseapp.com",
+            databaseURL: "https://golf-tournament-antalya-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "golf-tournament-antalya",
+            storageBucket: "golf-tournament-antalya.firebasestorage.app",
+            messagingSenderId: "672955257432",
+            appId: "1:672955257432:web:29104c0908114538f9702d"
+        };
+
+        // Initialize Firebase
+        let database;
+        let isFirebaseReady = false;
+
+        // Wait for Firebase modules to load
+        function initFirebase() {
+            if (window.firebaseApp && window.getDatabase) {
+                try {
+                    const app = window.firebaseApp(firebaseConfig);
+                    database = window.getDatabase(app);
+                    isFirebaseReady = true;
+                    console.log("Firebase connected successfully");
+                    
+                    // Load data after Firebase is ready
+                    loadLeaderboard();
+                    setupRealtimeListener();
+                    loadGroups();
+                } catch (error) {
+                    console.error("Firebase initialization error:", error);
+                    alert("Грешка при свързване към базата данни. Моля презаредете страницата.");
+                }
+            } else {
+                // Retry after 100ms
+                setTimeout(initFirebase, 100);
+            }
+        }
+
+        // Start initialization
+        setTimeout(initFirebase, 100);
+
         // Парола за админ
         const ADMIN_PASSWORD = "golf2025";
 
@@ -933,9 +984,8 @@
         function init() {
             populatePlayerSelects();
             populateCourseSelect();
-            loadLeaderboard();
-            loadGroups();
-            displayGroups();
+            displayGroups(); // Show default groups immediately
+            // Firebase functions will be called after Firebase is ready
         }
 
         function populatePlayerSelects() {
@@ -1025,6 +1075,11 @@
                 return;
             }
 
+            if (!isFirebaseReady) {
+                alert('Моля изчакайте, базата данни се зарежда...');
+                return;
+            }
+
             const course = courses[courseIndex];
 
             const scoreData = {
@@ -1038,42 +1093,50 @@
             };
 
             try {
-                const key = `score:${playerName}:${course.id}`;
-                localStorage.setItem(key, JSON.stringify(scoreData));
+                const key = `${playerName.replace(/\s+/g, '_')}_${course.id}`;
+                const scoreRef = window.dbRef(database, 'scores/' + key);
+                
+                // Save to Firebase
+                window.dbSet(scoreRef, scoreData)
+                    .then(() => {
+                        document.getElementById('saveMessage').innerHTML = `
+                            <div class="alert alert-success">
+                                ✅ Резултатът е записан успешно!<br>
+                                Играч: ${playerName}<br>
+                                Игрище: ${course.name}<br>
+                                Общо точки: ${totalPoints}
+                            </div>
+                        `;
 
-                document.getElementById('saveMessage').innerHTML = `
-                    <div class="alert alert-success">
-                        ✅ Резултатът е записан успешно!<br>
-                        Играч: ${playerName}<br>
-                        Игрище: ${course.name}<br>
-                        Общо точки: ${totalPoints}
-                    </div>
-                `;
+                        setTimeout(() => {
+                            document.getElementById('saveMessage').innerHTML = '';
+                            document.getElementById('totalPointsInput').value = '';
+                        }, 3000);
+                    })
+                    .catch((error) => {
+                        alert('Грешка при запазване: ' + error.message);
+                    });
 
-                setTimeout(() => {
-                    document.getElementById('saveMessage').innerHTML = '';
-                    document.getElementById('totalPointsInput').value = '';
-                }, 3000);
-
-                loadLeaderboard();
             } catch (error) {
                 alert('Грешка при запазване: ' + error.message);
             }
         }
 
         function loadLeaderboard() {
-            try {
-                const scores = {};
+            if (!isFirebaseReady) {
+                console.log('Firebase not ready yet');
+                return;
+            }
 
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    
-                    if (key && key.startsWith('score:')) {
-                        try {
-                            const value = localStorage.getItem(key);
-                            if (value) {
-                                const scoreData = JSON.parse(value);
-                                
+            try {
+                const scoresRef = window.dbRef(database, 'scores');
+                window.dbGet(scoresRef)
+                    .then((snapshot) => {
+                        const scores = {};
+                        const data = snapshot.val();
+
+                        if (data) {
+                            Object.values(data).forEach(scoreData => {
                                 if (!scores[scoreData.player]) {
                                     scores[scoreData.player] = {
                                         player: scoreData.player,
@@ -1084,17 +1147,48 @@
                                 }
                                 
                                 scores[scoreData.player].rounds[scoreData.courseId] = scoreData.totalPoints;
-                            }
-                        } catch (e) {
-                            console.error('Error loading score:', e);
+                            });
                         }
-                    }
-                }
 
-                displayLeaderboard(scores);
+                        displayLeaderboard(scores);
+                    })
+                    .catch((error) => {
+                        console.error('Error loading leaderboard:', error);
+                    });
             } catch (error) {
                 console.error('Error loading leaderboard:', error);
             }
+        }
+
+        // Real-time listener for automatic updates
+        function setupRealtimeListener() {
+            if (!isFirebaseReady) {
+                console.log('Firebase not ready for realtime listener');
+                return;
+            }
+
+            const scoresRef = window.dbRef(database, 'scores');
+            window.dbOnValue(scoresRef, (snapshot) => {
+                const scores = {};
+                const data = snapshot.val();
+
+                if (data) {
+                    Object.values(data).forEach(scoreData => {
+                        if (!scores[scoreData.player]) {
+                            scores[scoreData.player] = {
+                                player: scoreData.player,
+                                gender: players[scoreData.player].gender,
+                                hcp: players[scoreData.player].hcp,
+                                rounds: {}
+                            };
+                        }
+                        
+                        scores[scoreData.player].rounds[scoreData.courseId] = scoreData.totalPoints;
+                    });
+                }
+
+                displayLeaderboard(scores);
+            });
         }
 
         function displayLeaderboard(scores) {
@@ -1107,13 +1201,19 @@
                 
                 // Вземаме 4-те най-добри резултата
                 const sortedScores = [...validScores].sort((a, b) => b - a);
-                const top4 = sortedScores.slice(0, 4);
-                const total = top4.reduce((a, b) => a + b, 0);
+                const top4Scores = sortedScores.slice(0, 4);
+                
+                // Допълваме с тирета ако са по-малко от 4
+                while (top4Scores.length < 4) {
+                    top4Scores.push('-');
+                }
+                
+                const total = sortedScores.slice(0, 4).filter(s => typeof s === 'number').reduce((a, b) => a + b, 0);
                 
                 const playerData = {
                     ...player,
                     total: total,
-                    roundScores: roundScores.map(s => s === null ? '-' : s),
+                    top4Scores: top4Scores,
                     playedRounds: validScores.length
                 };
 
@@ -1133,7 +1233,7 @@
             tbody.innerHTML = '';
 
             if (players.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Все още няма записани резултати</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Все още няма записани резултати</td></tr>';
                 return;
             }
 
@@ -1147,8 +1247,8 @@
                     <td>${index + 1}</td>
                     <td>${player.player}</td>
                     <td>${player.hcp.toFixed(1)}</td>
-                    ${player.roundScores.map(s => `<td>${s}</td>`).join('')}
-                    <td><strong>${player.total}</strong></td>
+                    ${player.top4Scores.map(s => `<td style="background: #e8f5e9;">${s}</td>`).join('')}
+                    <td style="background: #fffacd;"><strong>${player.total}</strong></td>
                 `;
 
                 tbody.appendChild(row);
@@ -1157,16 +1257,29 @@
 
         // ГРУПИ
         function loadGroups() {
+            if (!isFirebaseReady) {
+                console.log('Using default groups - Firebase not ready');
+                displayGroups();
+                return;
+            }
+
             try {
-                const saved = localStorage.getItem('tournament_groups');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && Array.isArray(parsed)) {
-                        defaultGroups = parsed;
-                    }
-                }
+                const groupsRef = window.dbRef(database, 'groups');
+                window.dbGet(groupsRef)
+                    .then((snapshot) => {
+                        const saved = snapshot.val();
+                        if (saved && Array.isArray(saved)) {
+                            defaultGroups = saved;
+                        }
+                        displayGroups();
+                    })
+                    .catch((error) => {
+                        console.log('Using default groups');
+                        displayGroups();
+                    });
             } catch (e) {
                 console.log('Using default groups');
+                displayGroups();
             }
         }
 
@@ -1273,22 +1386,33 @@
                 return;
             }
 
-            // Запазване
+            if (!isFirebaseReady) {
+                alert('Моля изчакайте, базата данни се зарежда...');
+                return;
+            }
+
+            // Запазване в Firebase
             try {
-                localStorage.setItem('tournament_groups', JSON.stringify(newGroups));
-                defaultGroups = newGroups;
-                isEditMode = false;
-                displayGroups();
+                const groupsRef = window.dbRef(database, 'groups');
+                window.dbSet(groupsRef, newGroups)
+                    .then(() => {
+                        defaultGroups = newGroups;
+                        isEditMode = false;
+                        displayGroups();
 
-                document.getElementById('editMessage').innerHTML = `
-                    <div class="alert alert-success">
-                        ✅ Групите са запазени успешно!
-                    </div>
-                `;
+                        document.getElementById('editMessage').innerHTML = `
+                            <div class="alert alert-success">
+                                ✅ Групите са запазени успешно!
+                            </div>
+                        `;
 
-                setTimeout(() => {
-                    document.getElementById('editMessage').innerHTML = '';
-                }, 3000);
+                        setTimeout(() => {
+                            document.getElementById('editMessage').innerHTML = '';
+                        }, 3000);
+                    })
+                    .catch((error) => {
+                        alert('Грешка при запазване: ' + error.message);
+                    });
             } catch (error) {
                 alert('Грешка при запазване: ' + error.message);
             }
