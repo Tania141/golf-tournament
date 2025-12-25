@@ -646,6 +646,7 @@
             
             <div class="admin-controls">
                 <button class="edit-btn" onclick="showPasswordModal()">✏️ Редактирай Групи</button>
+                <button class="edit-btn" onclick="resetGroups()" style="background: #dc3545; margin-left: 10px;">🔄 Нулирай Групи</button>
             </div>
 
             <div class="alert alert-info">
@@ -989,10 +990,10 @@
 
         // Начални групи (ще се зареждат от Firebase) - 4 групи по 4 играчи
         let defaultGroups = [
-            ["Anton Panayotov", "Todor Kostov", "Biser Denev", "Dido Gospodinov"],
-            ["Trifon Siderov", "Ilian Iliev", "Niki Georgiev", "Petq Ilieva"],
-            ["Albena Deneva", "Elka Georgieva", "Hristo Bojikov", "Krasimir Martinov"],
-            ["Zlatan Zlatanov", "Stoyanka Tsoneva", "Pepi Kostova", "Fani Martinova"]
+            ["Petq Ilieva", "Todor Kostov", "Biser Denev", "Pepi Kostova"],
+            ["Trifon Siderov", "Ilian Iliev", "Niki Georgiev", "Anton Panayotov"],
+            ["Albena Deneva", "Elka Georgieva", "Dido Gospodinov", "Hristo Bojikov"],
+            ["Krasimir Martinov", "Zlatan Zlatanov", "Stoyanka Tsoneva", "Fani Martinova"]
         ];
 
         let currentPlayer = null;
@@ -1475,6 +1476,40 @@
         function cancelEdit() {
             isEditMode = false;
             displayGroups();
+        }
+
+        function resetGroups() {
+            if (!confirm('Сигурна ли си, че искаш да нулираш групите до началните стойности?')) {
+                return;
+            }
+
+            if (!isFirebaseReady) {
+                alert('Моля изчакайте, базата данни се зарежда...');
+                return;
+            }
+
+            // Нулиране до началните групи
+            const resetGroups = [
+                ["Petq Ilieva", "Todor Kostov", "Biser Denev", "Pepi Kostova"],
+                ["Trifon Siderov", "Ilian Iliev", "Niki Georgiev", "Anton Panayotov"],
+                ["Albena Deneva", "Elka Georgieva", "Dido Gospodinov", "Hristo Bojikov"],
+                ["Krasimir Martinov", "Zlatan Zlatanov", "Stoyanka Tsoneva", "Fani Martinova"]
+            ];
+
+            try {
+                const groupsRef = window.dbRef(database, 'groups');
+                window.dbSet(groupsRef, resetGroups)
+                    .then(() => {
+                        defaultGroups = resetGroups;
+                        displayGroups();
+                        alert('✅ Групите са нулирани успешно!');
+                    })
+                    .catch((error) => {
+                        alert('Грешка при нулиране: ' + error.message);
+                    });
+            } catch (error) {
+                alert('Грешка при нулиране: ' + error.message);
+            }
         }
 
         function showTab(tabName) {
